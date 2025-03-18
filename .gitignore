@@ -50,3 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Markdown for assignment
+README_RUS.md
+
+# Config
+.vscode
