@@ -1,0 +1,24 @@
+/**
+ * @file common.h
+ * @author Alexandr Afanasev (https://github.com/pennyclo)
+ * @brief
+ * @version 1.0
+ * @date 2025-03-20
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
+#ifndef SRC_INCLUDE_FLEXIBLE_COMMON_H_
+#define SRC_INCLUDE_FLEXIBLE_COMMON_H_
+
+#include <math.h>
+#include <stdlib.h>
+
+#include "../macros.h"
+#include "../types.h"
+
+int significants_count(s21_decimal decimal);
+flex_int decimal_to_flex(s21_decimal decimal);
+
+#endif  // SRC_INCLUDE_FLEXIBLE_COMMON_H_
