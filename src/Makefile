@@ -54,9 +54,11 @@ $(DEBUG): clean $(DEBUG_DIR) $(OBJ_DIR)/modules $(OBJ_FILES)
 	@valgrind $(VAL_FLAGS) ./$(DEBUG_DIR)/$@
 
 $(OBJ_DIR)/modules/%.o: $(MODULES_DIR)/%.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ_DIR_COV)/%.o: $(MODULES_DIR)/%.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(COV_FLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/tests/%.o: $(TESTS_DIR)/modules_test/%.c
@@ -90,7 +92,7 @@ $(GCOV_REPORT): $(REPORT_DIR) $(OBJ_DIR)/tests $(TEST_O) $(STATIC_LIB_COV)
 $(DVI): $(DOCS_DIR)
 	doxygen Doxyfile
 
-#==============================CREATE_DIRECTORIES==============================
+#==============================CREATE_DIRECTORIES==============================#
 $(OBJ_DIR)/modules:
 	mkdir -p $@
 
