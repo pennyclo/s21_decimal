@@ -16,16 +16,22 @@
 
 #define SCALE_MASK 0xFF0000
 
+#define MAX(value1, value2) (((value1) >= (value2)) ? (value1) : (value2))
+
 #define CHECK_BIT(value, bit) (((value) >> (bit)) & 1u)
 
 #define GET_SCALE(service) (((service) & (SCALE_MASK)) >> 16)
 
 #define GET_SIGN(service) ((service) >> ((SIZE(service)) - 1))
 
-#define CHECK_DEC_BIT(mass, bit) \
-  CHECK_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
+#define CHECK_DEC_BIT(mass, bit, size)                                    \
+  ((size) >= (bit))                                                       \
+      ? CHECK_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass)))) \
+      : 0
 
-#define SET_BIT(value, bit) value |= (1u << bit)
+#define IS_BIT(mass, bit)
+
+#define SET_BIT(value, bit) ((value) |= (1u << (bit)))
 
 #define SET_DEC_BIT(mass, bit) \
   SET_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))

@@ -20,8 +20,12 @@ void print_int_bits(int x) {
 }
 
 void print_decimal(s21_decimal x) {
+  // for (int i = significants_count(x); i >= 0; i--) {
   for (int i = 95; i >= 0; i--) {
-    printf("%d", CHECK_DEC_BIT(x.bits, i));
+    printf("%d", CHECK_DEC_BIT(x.bits, i, i));
+    if (i % 32 == 0) {
+      printf(" ");
+    }
   }
   printf("\n");
 
@@ -30,19 +34,42 @@ void print_decimal(s21_decimal x) {
 }
 
 void print_flex(flex_int x) {
-  for (int i = x.data_size * 8 - 1; i >= 0; i--) {
-    printf("%d", CHECK_DEC_BIT(x.data, i));
+  if (x.data == NULL || x.data_size <= 0) {
+    printf("Empty flex_int\n");
+    return;
+  }
+
+  // for (int i = x.data_size - 1; i >= 0; i--) {
+  for (int i = 95; i >= 0; i--) {
+    printf("%d", CHECK_DEC_BIT(x.data, i, x.data_size));
+    if (i % 32 == 0) {
+      printf(" ");
+    }
   }
   printf("\n");
 }
 
 int main() {
-  s21_decimal x = {{5, 0, 0, 034223141234}};
-  flex_int y = decimal_to_flex(x);
+  s21_decimal x = {{36, 0, 0, 0}};
+  s21_decimal y = {{26, 0, 0, 0}};
+  s21_decimal z = {{10, 0, 0, 0}};
 
-  print_decimal(x);
-  print_flex(y);
-  free(y.data);
+  flex_int x1 = decimal_to_flex(x);
+  flex_int y1 = decimal_to_flex(y);
+
+  print_flex(x1);
+  printf("-\n");
+  print_flex(y1);
+  printf("=\n");
+  flex_int sum = flex_sub(x1, y1);
+
+  print_flex(sum);
+  printf("expected\n");
+  print_decimal(z);
+
+  free(x1.data);
+  free(y1.data);
+  free(sum.data);
 
   return 0;
 }

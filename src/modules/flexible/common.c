@@ -11,6 +11,8 @@
 
 #include "../../include/flexible/common.h"
 
+#include <stdio.h>
+
 /**
  * @brief Determines the position of the oldest set bit in the number.
  *
@@ -22,10 +24,10 @@
  * @return The index of the oldest bit set (0-95) or 0 if the number is zero.
  */
 int significants_count(s21_decimal decimal) {
-  int i = 95;
+  int i = MAX_DEC_BIT - 1;
 
   for (int bit = 0; i >= 0 && !bit; i--) {
-    bit = CHECK_DEC_BIT(decimal.bits, i);
+    bit = CHECK_DEC_BIT(decimal.bits, i, i);
   }
 
   return i + 1;
@@ -48,18 +50,89 @@ int significants_count(s21_decimal decimal) {
 flex_int decimal_to_flex(s21_decimal decimal) {
   flex_int data = {0};
 
-  data.data_size = ceil((double)significants_count(decimal) / 8);
+  data.data_size = significants_count(decimal) + 1;
   data.service = (GET_SCALE(decimal.bits[3]) << 1) | GET_SIGN(decimal.bits[3]);
-  data.data = (uint8_t *)calloc(data.data_size, sizeof(uint8_t));
+  data.data = (uint8_t *)calloc((size_t)ceil((double)data.data_size / 8),
+                                sizeof(uint8_t));
   if (!data.data) {
     return data;
   }
 
-  for (int i = 95; i >= 0; i--) {
-    if (CHECK_DEC_BIT(decimal.bits, i)) {
+  for (int i = data.data_size - 1; i >= 0; i--) {
+    if (CHECK_DEC_BIT(decimal.bits, i, data.data_size)) {
       SET_DEC_BIT(data.data, i);
     }
   }
 
   return data;
+}
+
+flex_int flex_sum(flex_int dec1, flex_int dec2) {
+  flex_int sum_dec = {0};
+  int remainder = 0;
+  int i = 0, check1 = 0, check2 = 0, check3 = 0;
+
+  sum_dec.data = (uint8_t *)calloc(
+      (size_t)ceil((double)(MAX(dec1.data_size, dec2.data_size) / 8)) + 1,
+      sizeof(uint8_t));
+
+  if (!sum_dec.data) {
+    return sum_dec;
+  }
+
+  for (; i <= MAX(dec1.data_size, dec2.data_size) - 1; i++) {
+    check1 = CHECK_DEC_BIT(dec1.data, i, dec1.data_size);
+    check2 = CHECK_DEC_BIT(dec2.data, i, dec2.data_size);
+
+    check3 = check1 + check2 + remainder;
+    remainder = (check3 >= 2) ? 1 : 0;
+
+    if (check3 % 2) {
+      SET_DEC_BIT(sum_dec.data, i);
+    }
+  }
+
+  sum_dec.data_size = i;
+
+  if (remainder) {
+    SET_DEC_BIT(sum_dec.data, i);
+    sum_dec.data_size++;
+  }
+
+  return sum_dec;
+}
+
+flex_int flex_sub(flex_int dec1, flex_int dec2) {
+  flex_int sub_dec = {0};
+  int loan = 0;
+  int i = 0, check1 = 0, check2 = 0, check3 = 0;
+
+  sub_dec.data = (uint8_t *)calloc(
+      (size_t)ceil((double)(MAX(dec1.data_size, dec2.data_size) / 8)) + 1,
+      sizeof(uint8_t));
+
+  if (!sub_dec.data) {
+    return sub_dec;
+  }
+
+  for (; i <= MAX(dec1.data_size, dec2.data_size) - 1; i++) {
+    check1 = CHECK_DEC_BIT(dec1.data, i, dec1.data_size);
+    check2 = CHECK_DEC_BIT(dec2.data, i, dec2.data_size);
+
+    check3 = check1 - check2 - loan;
+    loan = (check3 <= -1) ? 1 : 0;
+
+    if (check3 == -1) {
+      SET_DEC_BIT(sub_dec.data, i);
+    }
+  }
+
+  sub_dec.data_size = i;
+
+  // if (loan) {
+  //   SET_DEC_BIT(sub_dec.data, i);
+  //   sub_dec.data_size++;
+  // }
+
+  return sub_dec;
 }

@@ -14,8 +14,11 @@
 
 #include <stdint.h>
 
+#define DEC_SIZE 4
+#define MAX_DEC_BIT (DEC_SIZE - 1) * sizeof(unsigned int)
+
 typedef struct {
-  unsigned int bits[4];
+  unsigned int bits[DEC_SIZE];
 } s21_decimal;
 
 typedef struct {
