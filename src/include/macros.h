@@ -33,7 +33,12 @@
 
 #define SET_BIT(value, bit) ((value) |= (1u << (bit)))
 
+#define SET_BIT_ZERO(value, bit) ((value) &= ~(1u << (bit)))
+
 #define SET_DEC_BIT(mass, bit) \
   SET_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
+
+#define SET_DEC_BIT_ZERO(mass, bit) \
+  SET_BIT_ZERO((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
 
 #endif  // SRC_INCLUDE_MACROS_H_
