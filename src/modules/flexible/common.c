@@ -30,7 +30,7 @@ int significants_count(s21_decimal decimal) {
     bit = CHECK_DEC_BIT(decimal.bits, i, i);
   }
 
-  return i + 1;
+  return i + 2;
 }
 
 /**
@@ -50,7 +50,7 @@ int significants_count(s21_decimal decimal) {
 flex_int decimal_to_flex(s21_decimal decimal) {
   flex_int data = {0};
 
-  data.data_size = significants_count(decimal) + 1;
+  data.data_size = significants_count(decimal);
   data.service = (GET_SCALE(decimal.bits[3]) << 1) | GET_SIGN(decimal.bits[3]);
   data.data = (uint8_t *)calloc((size_t)ceil((double)data.data_size / 8),
                                 sizeof(uint8_t));
@@ -143,14 +143,14 @@ flex_int flex_sub(flex_int dec1, flex_int dec2) {
   return sub_dec;
 }
 
-int significants_count_flex(flex_int decimal) {
-  int i = MAX_DEC_BIT * 8 - 1;
+int significants_count_flex(flex_int decimal, int size) {
+  int i = size * SIZE(uint8_t) - 1;
 
   for (int bit = 0; i >= 0 && !bit; i--) {
     bit = CHECK_DEC_BIT(decimal.data, i, i);
   }
 
-  return i + 1;
+  return i + 2;
 }
 
 flex_int flex_mul(flex_int dec1, flex_int dec2) {
@@ -162,7 +162,7 @@ flex_int flex_mul(flex_int dec1, flex_int dec2) {
 
   mul_dec.data = (uint8_t *)calloc(size, sizeof(uint8_t));
 
-  if (!mul_dec.data || size > 96) {
+  if (!mul_dec.data) {
     return mul_dec;
   }
 
@@ -172,7 +172,7 @@ flex_int flex_mul(flex_int dec1, flex_int dec2) {
     bit = CHECK_DEC_BIT(dec2.data, i, dec2.data_size);
     if (bit) {
       for (int j = 0; j <= dec1.data_size - 1 || loan; j++) {
-        check1 = CHECK_DEC_BIT(dec1.data, j, dec1.data_size);
+        check1 = CHECK_DEC_BIT(dec1.data, j, dec1.data_size - 1);
         if (check1 || loan) {
           check2 = CHECK_DEC_BIT(mul_dec.data, j + i, j + i);
 
@@ -188,8 +188,7 @@ flex_int flex_mul(flex_int dec1, flex_int dec2) {
       }
     }
   }
-
-  mul_dec.data_size = significants_count_flex(mul_dec);
+  mul_dec.data_size = significants_count_flex(mul_dec, size);
 
   return mul_dec;
 }

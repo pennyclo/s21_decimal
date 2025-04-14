@@ -39,29 +39,31 @@ void print_flex(flex_int x) {
     return;
   }
 
-  // for (int i = x.data_size - 1; i >= 0; i--) {
-  for (int i = 95; i >= 0; i--) {
-    printf("%d", CHECK_DEC_BIT(x.data, i, x.data_size));
+  for (int i = x.data_size - 1; i >= 0; i--) {
+    // for (int i = 95; i >= 0; i--) {
+    printf("%d", CHECK_DEC_BIT(x.data, i, x.data_size - 1));
     if (i % 32 == 0) {
-      printf(" ");
+      // printf(" ");
     }
   }
   printf("\n");
 }
 
 int main() {
-  s21_decimal x = {{36, 0, 0, 0}};
-  s21_decimal y = {{26, 0, 0, 0}};
-  s21_decimal z = {{10, 0, 0, 0}};
+  s21_decimal x = {{-1, -1, 0, 0}};
+  s21_decimal y = {{-1, -1, 0, 0}};
+  s21_decimal z = {{1, -2, 0, 0}};
 
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
 
   print_flex(x1);
-  printf("-\n");
+  printf("*\n");
   print_flex(y1);
   printf("=\n");
-  flex_int sum = flex_sub(x1, y1);
+  flex_int sum = flex_mul(x1, y1);
+
+  // printf("<%d>\n", sum.data[1]);
 
   print_flex(sum);
   printf("expected\n");

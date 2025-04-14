@@ -24,10 +24,11 @@
 
 #define GET_SIGN(service) ((service) >> ((SIZE(service)) - 1))
 
-#define CHECK_DEC_BIT(mass, bit, size)                                    \
-  ((size) >= (bit))                                                       \
-      ? CHECK_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass)))) \
-      : 0
+#define CHECK_DEC_BIT_UNSAFE(mass, bit) \
+  CHECK_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
+
+#define CHECK_DEC_BIT(mass, bit, size) \
+  ((size) >= (bit)) ? CHECK_DEC_BIT_UNSAFE((mass), (bit)) : 0
 
 #define IS_BIT(mass, bit)
 

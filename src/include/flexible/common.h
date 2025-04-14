@@ -23,6 +23,6 @@ flex_int decimal_to_flex(s21_decimal decimal);
 flex_int flex_sum(flex_int dec1, flex_int dec2);
 flex_int flex_sub(flex_int dec1, flex_int dec2);
 flex_int flex_mul(flex_int dec1, flex_int dec2);
-int significants_count_flex(flex_int decimal);
+int significants_count_flex(flex_int decimal, int size);
 
 #endif  // SRC_INCLUDE_FLEXIBLE_COMMON_H_
