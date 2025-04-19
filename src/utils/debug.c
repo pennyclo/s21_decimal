@@ -43,16 +43,16 @@ void print_flex(flex_int x) {
     // for (int i = 95; i >= 0; i--) {
     printf("%d", CHECK_DEC_BIT(x.data, i, x.data_size - 1));
     if (i % 32 == 0) {
-      // printf(" ");
+      printf(" ");
     }
   }
   printf("\n");
 }
 
 int main() {
-  s21_decimal x = {{-1, -1, 0, 0}};
-  s21_decimal y = {{-1, -1, 0, 0}};
-  s21_decimal z = {{1, -2, 0, 0}};
+  s21_decimal x = {{4294967295, 4294967295, 4294967295, 0}};
+  s21_decimal y = {{4294967294, 4294967294, 4294967294, 0}};
+  s21_decimal z = {{1024, 0, 0, 0}};
 
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
@@ -61,9 +61,11 @@ int main() {
   printf("*\n");
   print_flex(y1);
   printf("=\n");
-  flex_int sum = flex_mul(x1, y1);
+  printf("<%d>\n", y1.data_size);
 
-  // printf("<%d>\n", sum.data[1]);
+  flex_int sum = flex_sub(&x1, &y1);
+
+  printf("<%d>\n", y1.data_size);
 
   print_flex(sum);
   printf("expected\n");

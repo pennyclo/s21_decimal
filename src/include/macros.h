@@ -27,19 +27,16 @@
 #define CHECK_DEC_BIT_UNSAFE(mass, bit) \
   CHECK_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
 
-#define CHECK_DEC_BIT(mass, bit, size) \
-  ((size) >= (bit)) ? CHECK_DEC_BIT_UNSAFE((mass), (bit)) : 0
-
-#define IS_BIT(mass, bit)
+#define CHECK_DEC_BIT(mass, bit, bit_size) \
+  ((bit_size) >= (bit)) ? CHECK_DEC_BIT_UNSAFE((mass), (bit)) : 0
 
 #define SET_BIT(value, bit) ((value) |= (1u << (bit)))
 
 #define SET_BIT_ZERO(value, bit) ((value) &= ~(1u << (bit)))
 
-#define SET_DEC_BIT(mass, bit) \
-  SET_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
-
-#define SET_DEC_BIT_ZERO(mass, bit) \
-  SET_BIT_ZERO((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
+#define SET_DEC_BIT(mass, bit, bit_state)                               \
+  ((bit_state) == 1)                                                    \
+      ? SET_BIT((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass)))) \
+      : SET_BIT_ZERO((mass[(bit) / (SIZE(*mass))]), ((bit) % (SIZE(*mass))))
 
 #endif  // SRC_INCLUDE_MACROS_H_
