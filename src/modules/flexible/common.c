@@ -122,56 +122,118 @@ flex_int flex_sum(flex_int dec1, flex_int dec2) {
 
 flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
   flex_int sub_dec = {0};
-  int i = 0, check1 = 0, check2 = 0, check3 = 0, loan = 0;
-
-  sub_dec.data = (uint8_t *)calloc(
-      (size_t)ceil((double)(MAX(dec1->data_size, dec2->data_size) / 8)) + 1,
-      sizeof(uint8_t));
-
-  if (!sub_dec.data) {
-    return sub_dec;
-  }
-
-  sub_dec.data_size = MAX(dec1->data_size, dec2->data_size);
-
   int big_dec = 0;
 
-  if (dec1->data_size >= dec2->data_size) {
-    flex_int tmp = realloc_to_flex(*dec2, dec1->data_size);
-    if (tmp.data) {
-      free(dec2->data);
-      *dec2 = tmp;
-      big_dec = compare_decimal(*dec1, *dec2, sub_dec.data_size / 8 - 1);
-    } else {
+  if (dec1->data_size > dec2->data_size) {
+    if (!(normal_bit_sub(dec2, dec1->data_size))) {
+      return sub_dec;
+    }
+  } else if (dec2->data_size > dec1->data_size) {
+    if (!(normal_bit_sub(dec1, dec2->data_size))) {
       return sub_dec;
     }
   }
 
-  for (; i <= sub_dec.data_size - 1; i++) {
-    check1 = CHECK_DEC_BIT(dec1->data, i, dec1->data_size);
-    check2 = CHECK_DEC_BIT(dec2->data, i, dec2->data_size);
+  // sub_dec.data = (uint8_t *)calloc(
+  // (size_t)ceil((double)(MAX(dec1->data_size, dec2->data_size) / 8)) + 1,
+  // sizeof(uint8_t));
 
-    if (big_dec == -1) {
-      check3 = check2 - check1 - loan;
-    } else {
-      check3 = check1 - check2 - loan;
+  // if (!sub_dec.data) {
+  // return sub_dec;
+  // }
+
+  sub_dec.data_size = MAX(dec1->data_size, dec2->data_size);
+
+  big_dec = compare_decimal(*dec1, *dec2, sub_dec.data_size / 8 - 1);
+
+  if (big_dec == 1 || !big_dec) {
+    for (int i = 0; i <= sub_dec.data_size / 8; i++) {
+      dec2->data[i] = ~dec2->data[i];
     }
 
-    loan = (check3 <= -1) ? 1 : 0;
-
-    if (check3 == -1 || check3 == 1) {
-      SET_DEC_BIT(sub_dec.data, i, 1);
+    sub_dec = flex_sum(*dec1, *dec2);
+    dec2->data = 0;
+    dec2->data = 1;
+    sub_dec = flex_sum(*dec1, *dec2);
+  } else if (big_dec == -1) {
+    for (int i = 0; i <= sub_dec.data_size / 8 - 1; i++) {
+      dec1->data[i] = ~dec1->data[i];
     }
-  }
 
-  sub_dec.data_size = i;
-
-  if (loan) {
-    SET_DEC_BIT(sub_dec.data, i, loan);
+    sub_dec = flex_sum(*dec2, *dec1);
+    dec1->data = 0;
+    *dec1->data = 1;
+    sub_dec = flex_sum(*dec2, *dec1);
   }
 
   return sub_dec;
 }
+
+int normal_bit_sub(flex_int *decimal, int normal_size_bit) {
+  int valid = 1;
+  flex_int tmp = realloc_to_flex(*decimal, normal_size_bit);
+  if (tmp.data) {
+    free(decimal->data);
+    *decimal = tmp;
+  } else {
+    valid = 0;
+  }
+
+  return valid;
+}
+
+// flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
+// flex_int sub_dec = {0};
+// int i = 0, check1 = 0, check2 = 0, check3 = 0, loan = 0;
+//
+// sub_dec.data = (uint8_t *)calloc(
+// (size_t)ceil((double)(MAX(dec1->data_size, dec2->data_size) / 8)) + 1,
+// sizeof(uint8_t));
+//
+// if (!sub_dec.data) {
+// return sub_dec;
+// }
+//
+// sub_dec.data_size = MAX(dec1->data_size, dec2->data_size);
+//
+// int big_dec = 0;
+//
+// if (dec1->data_size >= dec2->data_size) {
+// flex_int tmp = realloc_to_flex(*dec2, dec1->data_size);
+// if (tmp.data) {
+// free(dec2->data);
+// *dec2 = tmp;
+// big_dec = compare_decimal(*dec1, *dec2, sub_dec.data_size / 8 - 1);
+// } else {
+// return sub_dec;
+// }
+// }
+//
+// for (; i <= sub_dec.data_size - 1; i++) {
+// check1 = CHECK_DEC_BIT(dec1->data, i, dec1->data_size);
+// check2 = CHECK_DEC_BIT(dec2->data, i, dec2->data_size);
+//
+// if (big_dec == -1) {
+// check3 = check2 - check1 - loan;
+// } else {
+// check3 = check1 - check2 - loan;
+// }
+//
+// loan = (check3 <= -1) ? 1 : 0;
+//
+// if (check3 == -1 || check3 == 1) {
+// SET_DEC_BIT(sub_dec.data, i, 1);
+// }
+// }
+//
+// sub_dec.data_size = i;
+//
+// if (loan) {
+// SET_DEC_BIT(sub_dec.data, i, loan);
+// }
+//
+// return sub_dec;
+// }
 
 int significants_count_flex(flex_int decimal, int size) {
   int i = size * SIZE(uint8_t) - 1;
@@ -231,7 +293,8 @@ flex_int flex_div(flex_int dividend, flex_int divisor) {
         CHECK_DEC_BIT(dividend.data, i, dividend.data_size - 1);
 
     if (compare_decimal(remainder, divisor, size) == 1) {
-        }
+      flex_sub(&remainder, &divisor);
+    }
   }
 }
 
@@ -248,7 +311,7 @@ void shift_left(flex_int decimal, int size) {
 int compare_decimal(flex_int dec1, flex_int dec2, int size) {
   int valid = 0;
   for (int i = size; i >= 0 && !valid; i--) {
-    if (dec1.data[i] > dec2.data[i]) {
+    if (dec1.data[i] >= dec2.data[i]) {
       valid = 1;
     } else if (dec2.data[i] > dec1.data[i]) {
       valid = -1;

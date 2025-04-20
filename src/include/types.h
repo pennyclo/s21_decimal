@@ -22,9 +22,9 @@ typedef struct {
 } s21_decimal;
 
 typedef struct {
+  uint8_t *data;
   uint8_t data_size;
   uint8_t service;
-  uint8_t *data;
 } flex_int;
 
 #endif  // SRC_INCLUDE_TYPES_H_
