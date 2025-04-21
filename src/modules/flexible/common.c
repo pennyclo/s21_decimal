@@ -122,6 +122,10 @@ flex_int flex_sum(flex_int dec1, flex_int dec2) {
 
 flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
   flex_int sub_dec = {0};
+  flex_int one_bit = {0};
+  uint8_t res[] = {1, 0};
+  one_bit.data = res;
+  one_bit.data_size = 1;
   int big_dec = 0;
 
   if (dec1->data_size > dec2->data_size) {
@@ -147,23 +151,25 @@ flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
   big_dec = compare_decimal(*dec1, *dec2, sub_dec.data_size / 8 - 1);
 
   if (big_dec == 1 || !big_dec) {
-    for (int i = 0; i <= sub_dec.data_size / 8; i++) {
+    for (int i = 0; i <= sub_dec.data_size / 8 - 1; i++) {
       dec2->data[i] = ~dec2->data[i];
     }
 
+    flex_int tmp = flex_sum(*dec2, one_bit);
+    free(dec2->data);
+    *dec2 = tmp;
     sub_dec = flex_sum(*dec1, *dec2);
-    dec2->data = 0;
-    dec2->data = 1;
-    sub_dec = flex_sum(*dec1, *dec2);
+    shift_left(sub_dec, sub_dec.data_size / 8);
+    shift_right(sub_dec, sub_dec.data_size / 8);
   } else if (big_dec == -1) {
     for (int i = 0; i <= sub_dec.data_size / 8 - 1; i++) {
       dec1->data[i] = ~dec1->data[i];
     }
 
-    sub_dec = flex_sum(*dec2, *dec1);
-    dec1->data = 0;
-    *dec1->data = 1;
-    sub_dec = flex_sum(*dec2, *dec1);
+    flex_int tmp = flex_sum(*dec1, one_bit);
+    free(dec1->data);
+    *dec1 = tmp;
+    sub_dec = flex_sum(*dec1, *dec2);
   }
 
   return sub_dec;
@@ -304,6 +310,16 @@ void shift_left(flex_int decimal, int size) {
   for (int i = 0; i < size; i++) {
     uint8_t next_carry = CHECK_BIT(decimal.data[i], 7);
     decimal.data[i] = (decimal.data[i] << 1) | carry;
+    carry = next_carry;
+  }
+}
+
+void shift_right(flex_int decimal, int size) {
+  uint8_t carry = 0;
+
+  for (int i = size; i >= 0; i--) {
+    uint8_t next_carry = (CHECK_BIT(decimal.data[i], 0)) == 1 ? 128 : 0;
+    decimal.data[i] = (decimal.data[i] >> 1) | carry;
     carry = next_carry;
   }
 }

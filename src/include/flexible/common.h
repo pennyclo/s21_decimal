@@ -29,5 +29,6 @@ void shift_left(flex_int decimal, int size);
 int compare_decimal(flex_int dec1, flex_int dec2, int size);
 flex_int realloc_to_flex(flex_int decimal, int rllc_size);
 int normal_bit_sub(flex_int *decimal, int normal_size_bit);
+void shift_right(flex_int decimal, int size);
 
 #endif  // SRC_INCLUDE_FLEXIBLE_COMMON_H_

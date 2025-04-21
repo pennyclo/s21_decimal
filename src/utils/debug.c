@@ -20,8 +20,8 @@ void print_int_bits(int x) {
 }
 
 void print_decimal(s21_decimal x) {
-  // for (int i = significants_count(x); i >= 0; i--) {
-  for (int i = 95; i >= 0; i--) {
+  for (int i = significants_count(x); i >= 0; i--) {
+    // for (int i = 95; i >= 0; i--) {
     printf("%d", CHECK_DEC_BIT(x.bits, i, i));
     if (i % 32 == 0) {
       printf(" ");
@@ -50,9 +50,9 @@ void print_flex(flex_int x) {
 }
 
 int main() {
-  s21_decimal x = {{10, 0, 0, 0}};
-  s21_decimal y = {{5, 0, 0, 0}};
-  s21_decimal z = {{1024, 0, 0, 0}};
+  s21_decimal x = {{255, 0, 0, 0}};
+  s21_decimal y = {{3, 0, 0, 0}};
+  s21_decimal z = {{252, 0, 0, 0}};
 
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
