@@ -74,7 +74,7 @@ $(STATIC_LIB_COV): $(OBJ_DIR_COV) $(OBJ_FILES_COV)
 	ranlib $@
 
 #============================DOCUMENTATION_TARGETS=============================#
-$(TEST): $(OBJ_DIR)/tests $(TEST_O) $(STATIC_LIB)
+$(TEST): clean $(OBJ_DIR)/tests $(TEST_O) $(STATIC_LIB)
 	$(CC) $(MAIN_TEST) $(TEST_O) $(STATIC_LIB) $(LDFLAGS) -o $@
 	./$(TEST)
 
