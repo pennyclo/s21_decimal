@@ -16,6 +16,8 @@
 
 #define SCALE_MASK 0xFF0000
 
+#define UINT8_T_MASK 0xFF
+
 #define MAX(value1, value2) (((value1) >= (value2)) ? (value1) : (value2))
 
 #define CHECK_BIT(value, bit) (((value) >> (bit)) & 1u)

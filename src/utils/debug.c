@@ -50,8 +50,8 @@ void print_flex(flex_int x) {
 }
 
 int main() {
-  s21_decimal x = {{10, 0, 0, 0}};
-  s21_decimal y = {{5, 0, 0, 0}};
+  s21_decimal x = {{5, 0, 0, 0}};
+  s21_decimal y = {{10, 0, 0, 0}};
   s21_decimal z = {{5, 0, 0, 0}};
 
   flex_int x1 = decimal_to_flex(x);
@@ -62,7 +62,7 @@ int main() {
   print_flex(y1);
   printf("=\n");
 
-  flex_int sum = flex_sub(&x1, &y1);
+  flex_int sum = flex_div(x1, y1);
 
   print_flex(sum);
   printf("expected\n");

@@ -43,7 +43,7 @@ flex_int decimal_to_flex(s21_decimal decimal) {
   return data;
 }
 
-flex_int realloc_to_flex(flex_int decimal, int rllc_size) {
+flex_int realloc_to_flex(flex_int decimal, int rllc_size) {  // delete
   flex_int data = {0};
 
   data.data_size = rllc_size;
@@ -98,49 +98,19 @@ flex_int flex_sum(flex_int dec1, flex_int dec2) {
 
 flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
   flex_int sub_dec = {0};
-  flex_int one_bit = {0};
-  uint8_t ancillary_bit[] = {1, 0};
-  one_bit.data = ancillary_bit;
-  one_bit.data_size = 1;
   int big_dec = 0;
-
-  if (dec1->data_size > dec2->data_size) {
-    if (!(normal_bit_sub(dec2, dec1->data_size))) {
-      return sub_dec;
-    }
-  } else if (dec2->data_size > dec1->data_size) {
-    if (!(normal_bit_sub(dec1, dec2->data_size))) {
-      return sub_dec;
-    }
-  }
 
   sub_dec.data_size = MAX(dec1->data_size, dec2->data_size);
   int size = (size_t)ceil((double)(sub_dec.data_size) / 8);
 
+  sub_dec.data = (uint8_t *)calloc(size, sizeof(uint8_t));
+
   big_dec = compare_decimal(*dec1, *dec2, sub_dec.data_size / 8 - 1);
 
   if (big_dec == 1 || !big_dec) {
-    for (int i = 0; i <= sub_dec.data_size / 8 - 1; i++) {
-      dec2->data[i] = ~dec2->data[i];
-    }
-
-    flex_int tmp = flex_sum(*dec2, one_bit);
-    free(dec2->data);
-    *dec2 = tmp;
-    sub_dec = flex_sum(*dec1, *dec2);
-    shift_left(&sub_dec, sub_dec.data_size / 8);
-    shift_right(&sub_dec, sub_dec.data_size / 8);
+    cycle_sub(&sub_dec, dec1->data, dec2->data, size);
   } else if (big_dec == -1) {
-    for (int i = 0; i <= sub_dec.data_size / 8 - 1; i++) {
-      dec1->data[i] = ~dec1->data[i];
-    }
-
-    flex_int tmp = flex_sum(*dec1, one_bit);
-    free(dec1->data);
-    *dec1 = tmp;
-    sub_dec = flex_sum(*dec1, *dec2);
-    shift_left(&sub_dec, sub_dec.data_size / 8);
-    shift_right(&sub_dec, sub_dec.data_size / 8);
+    cycle_sub(&sub_dec, dec2->data, dec1->data, size);
   }
 
   sub_dec.data_size = significants_count_flex(sub_dec, size);
@@ -148,7 +118,20 @@ flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
   return sub_dec;
 }
 
-int normal_bit_sub(flex_int *decimal, int normal_size_bit) {
+void cycle_sub(flex_int *differ, uint8_t *min, uint8_t *subtrh, int size) {
+  uint16_t borrow = 0;
+
+  for (int i = 0; i < size; i++) {
+    uint16_t min_i = min[i];
+    uint16_t subtrh_i = subtrh[i];
+    uint16_t difference = min_i - subtrh_i - borrow;
+
+    differ->data[i] = difference & UINT8_T_MASK;
+    borrow = (difference > UINT8_T_MASK) ? 1 : 0;
+  }
+}
+
+int normal_bit_sub(flex_int *decimal, int normal_size_bit) {  // delete
   int valid = 1;
   flex_int tmp = realloc_to_flex(*decimal, normal_size_bit);
   if (tmp.data) {

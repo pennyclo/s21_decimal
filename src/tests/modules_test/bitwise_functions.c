@@ -159,8 +159,6 @@ START_TEST(bit_sub_1) {
 
   for (int i = 0; i <= sub.data_size / 8; i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
-    printf("%d\n", sub.data[i]);
-    printf("%d\n", res[i]);
   }
 
   free(x1.data);
