@@ -128,8 +128,8 @@ flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
     free(dec2->data);
     *dec2 = tmp;
     sub_dec = flex_sum(*dec1, *dec2);
-    shift_left(sub_dec, sub_dec.data_size / 8);
-    shift_right(sub_dec, sub_dec.data_size / 8);
+    shift_left(&sub_dec, sub_dec.data_size / 8);
+    shift_right(&sub_dec, sub_dec.data_size / 8);
   } else if (big_dec == -1) {
     for (int i = 0; i <= sub_dec.data_size / 8 - 1; i++) {
       dec1->data[i] = ~dec1->data[i];
@@ -139,8 +139,8 @@ flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
     free(dec1->data);
     *dec1 = tmp;
     sub_dec = flex_sum(*dec1, *dec2);
-    shift_left(sub_dec, sub_dec.data_size / 8);
-    shift_right(sub_dec, sub_dec.data_size / 8);
+    shift_left(&sub_dec, sub_dec.data_size / 8);
+    shift_right(&sub_dec, sub_dec.data_size / 8);
   }
 
   sub_dec.data_size = significants_count_flex(sub_dec, size);
@@ -212,41 +212,58 @@ flex_int flex_div(flex_int dividend, flex_int divisor) {
   int size = (size_t)ceil((double)(divisor.data_size) / 8);
 
   remainder.data = (uint8_t *)calloc(size, sizeof(uint8_t));
+  quotient.data = (uint8_t *)calloc(size * 2, sizeof(uint8_t));
 
   for (int i = dividend.data_size - 1; i >= 0; i--) {
-    shift_left(remainder, size);
+    shift_left(&remainder, size);
     remainder.data[0] |=
         CHECK_DEC_BIT(dividend.data, i, dividend.data_size - 1);
 
     if (compare_decimal(remainder, divisor, size) == 1) {
-      flex_sub(&remainder, &divisor);
+      flex_int tmp = flex_sub(&remainder, &divisor);
+      free(remainder.data);
+      remainder.data = tmp.data;
+      SET_DEC_BIT(quotient.data, i, 1);
     }
   }
+
+  remainder.data_size = significants_count_flex(remainder, size);
+  for (int i = 0; i <= remainder.data_size - 1; i++) {
+    shift_left(&quotient, size * 2);
+    if (CHECK_DEC_BIT(remainder.data, i, remainder.data_size - 1)) {
+      SET_DEC_BIT(quotient.data, i, 1);
+    }
+  }
+
+  free(remainder.data);
+  quotient.data_size = significants_count_flex(quotient, size);
+
+  return quotient;
 }
 
-void shift_left(flex_int decimal, int size) {
+void shift_left(flex_int *decimal, int size) {
   uint8_t carry = 0;
 
-  for (int i = 0; i <= size; i++) {
-    uint8_t next_carry = CHECK_BIT(decimal.data[i], 7);
-    decimal.data[i] = (decimal.data[i] << 1) | carry;
+  for (int i = 0; i <= size - 1; i++) {
+    uint8_t next_carry = CHECK_BIT(decimal->data[i], 7);
+    decimal->data[i] = (decimal->data[i] << 1) | carry;
     carry = next_carry;
   }
 }
 
-void shift_right(flex_int decimal, int size) {
+void shift_right(flex_int *decimal, int size) {
   uint8_t carry = 0;
 
-  for (int i = size; i >= 0; i--) {
-    uint8_t next_carry = (CHECK_BIT(decimal.data[i], 0)) == 1 ? 128 : 0;
-    decimal.data[i] = (decimal.data[i] >> 1) | carry;
+  for (int i = size - 1; i >= 0; i--) {
+    uint8_t next_carry = (CHECK_BIT(decimal->data[i], 0)) == 1 ? 128 : 0;
+    decimal->data[i] = (decimal->data[i] >> 1) | carry;
     carry = next_carry;
   }
 }
 
 int compare_decimal(flex_int dec1, flex_int dec2, int size) {
   int valid = 0;
-  for (int i = size; i >= 0 && !valid; i--) {
+  for (int i = size - 1; i >= 0 && !valid; i--) {
     if (dec1.data[i] >= dec2.data[i]) {
       valid = 1;
     } else if (dec2.data[i] > dec1.data[i]) {

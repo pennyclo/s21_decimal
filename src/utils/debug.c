@@ -50,15 +50,15 @@ void print_flex(flex_int x) {
 }
 
 int main() {
-  s21_decimal x = {{4294967295u, 4294967295u, 4294967295u, 0}};
-  s21_decimal y = {{4294967294u, 4294967294u, 4294967294u, 0}};
-  s21_decimal z = {{252, 0, 0, 0}};
+  s21_decimal x = {{10, 0, 0, 0}};
+  s21_decimal y = {{5, 0, 0, 0}};
+  s21_decimal z = {{5, 0, 0, 0}};
 
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
 
   print_flex(x1);
-  printf("*\n");
+  printf("/\n");
   print_flex(y1);
   printf("=\n");
 
