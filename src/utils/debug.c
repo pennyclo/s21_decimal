@@ -62,7 +62,7 @@ int main() {
   print_flex(y1);
   printf("=\n");
 
-  flex_int sum = flex_div(x1, y1);
+  flex_int sum = flex_sub(&x1, &y1);
 
   print_flex(sum);
   printf("expected\n");

@@ -105,7 +105,7 @@ flex_int flex_sub(flex_int *dec1, flex_int *dec2) {
 
   sub_dec.data = (uint8_t *)calloc(size, sizeof(uint8_t));
 
-  big_dec = compare_decimal(*dec1, *dec2, sub_dec.data_size / 8 - 1);
+  big_dec = compare_decimal(*dec1, *dec2, sub_dec.data_size / 8);
 
   if (big_dec == 1 || !big_dec) {
     cycle_sub(&sub_dec, dec1->data, dec2->data, size);
@@ -246,7 +246,7 @@ void shift_right(flex_int *decimal, int size) {
 
 int compare_decimal(flex_int dec1, flex_int dec2, int size) {
   int valid = 0;
-  for (int i = size - 1; i >= 0 && !valid; i--) {
+  for (int i = size; i >= 0 && !valid; i--) {
     if (dec1.data[i] >= dec2.data[i]) {
       valid = 1;
     } else if (dec2.data[i] > dec1.data[i]) {
