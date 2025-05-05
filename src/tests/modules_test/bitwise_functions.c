@@ -155,7 +155,7 @@ START_TEST(bit_sub_1) {
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
 
-  flex_int sub = flex_sub(&x1, &y1);
+  flex_int sub = flex_sub(x1, y1);
 
   for (int i = 0; i <= sub.data_size / 8; i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
@@ -176,7 +176,7 @@ START_TEST(bit_sub_2) {
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
 
-  flex_int sub = flex_sub(&x1, &y1);
+  flex_int sub = flex_sub(x1, y1);
 
   for (int i = 0; i <= sub.data_size / 8; i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
@@ -197,7 +197,7 @@ START_TEST(bit_sub_3) {
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
 
-  flex_int sub = flex_sub(&x1, &y1);
+  flex_int sub = flex_sub(x1, y1);
 
   for (int i = 0; i <= sub.data_size / 8; i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
@@ -218,7 +218,7 @@ START_TEST(bit_sub_4) {
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
 
-  flex_int sub = flex_sub(&x1, &y1);
+  flex_int sub = flex_sub(x1, y1);
 
   for (int i = 0; i <= sub.data_size / 8; i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
@@ -239,7 +239,7 @@ START_TEST(bit_sub_5) {
   flex_int x1 = decimal_to_flex(x);
   flex_int y1 = decimal_to_flex(y);
 
-  flex_int sub = flex_sub(&x1, &y1);
+  flex_int sub = flex_sub(x1, y1);
 
   for (int i = 0; i <= sub.data_size / 8; i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
