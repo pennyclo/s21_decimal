@@ -57,7 +57,7 @@ void print_flex_all(flex_int x) {
 }
 
 int main() {
-  s21_decimal x = {{10, 0, 0, 2149318656u}};
+  s21_decimal x = {{10, 0, 0, 2147811328u}};
   s21_decimal y = {{3, 0, 0, 2147680256u}};
 
   s21_decimal z = {{1, 1, 1, 0}};
