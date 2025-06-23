@@ -25,6 +25,8 @@ typedef struct {
   uint8_t *data;
   uint8_t data_size;
   uint8_t service;
+  uint8_t *remainder;
+  uint8_t remainder_size;
 } flex_int;
 
 #endif  // SRC_INCLUDE_TYPES_H_
