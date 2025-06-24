@@ -60,7 +60,6 @@ flex_int realloc_to_flex(flex_int decimal, int rllc_size) {  // delete
                 CHECK_DEC_BIT(decimal.data, i, decimal.data_size - 1));
   }
 
-  decimal.data = realloc;
   return data;
 }
 
@@ -264,38 +263,35 @@ int compare_decimal(uint8_t *dec1, uint8_t *dec2, int size) {
 void normalization(flex_int *dec1, flex_int *dec2) {
   uint8_t dec_exp_1 = GET_SCALE_FLEX(dec1->service);
   uint8_t dec_exp_2 = GET_SCALE_FLEX(dec2->service);
+  bool crt = true;
 
   if (dec_exp_1 != dec_exp_2) {
-    bool big_exp = dec_exp_1 > dec_exp_2 ? 1 : 0;
-
-    printf("<%d>", big_exp);    // debug
-    printf("<%d>", dec_exp_1);  // debug
-    printf("<%d>", dec_exp_2);  // debug
+    bool big_exp = dec_exp_1 > dec_exp_2 ? true : false;
 
     if (big_exp) {
-      int sub_exp = dec_exp_1 - dec_exp_2;
-      int crt = 1;
-
-      for (int i = 0; i < sub_exp && crt; i++) {
-        crt = mul_ten(dec2);
-      }
-
-      if (!crt) {
-        return;
-      }
-      // flex_int tmp2 = flex_mul(dec2, &tmp);
-      // free(dec2->data);
-      // dec2->data = tmp2.data;
-      // dec2->data_size = tmp2.data_size;
-
-      // printf("<%d>", sub_exp);  // debug
-
-      // int norm_bits = ceil(sub_exp * 3.32193);
-      // printf("<%d>", norm_bits);  // debug
-      // int debug_bits = check_alloc(&dec2->data_size, &norm_bits);
-      // printf("<%d>", debug_bits);  // debug
+      crt = cycle_normal(&dec_exp_1, &dec_exp_2, dec2);
+    } else {
+      crt = cycle_normal(&dec_exp_2, &dec_exp_1, dec1);
     }
   }
+
+  if (!crt) {
+    printf("Error in normalization\n");  // before add errors
+  }
+}
+
+bool cycle_normal(uint8_t *big_exp, uint8_t *small_exp, flex_int *small_dec) {
+  int sub_exp = *big_exp - *small_exp;
+  bool crt = 1;
+  uint8_t sign = GET_SIGN_FLEX(small_dec->service);
+
+  for (int i = 0; i < sub_exp && crt; i++) {
+    crt = mul_ten(small_dec);
+    (*small_exp)++;
+    small_dec->service = *small_exp << 1 | sign;
+  }
+
+  return crt;
 }
 
 bool mul_ten(flex_int *decimal) {

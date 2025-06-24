@@ -36,6 +36,7 @@ void cycle_sub(uint8_t *differ, uint8_t *min, uint8_t *subtrh, int min_size,
 
 void normalization(flex_int *dec1, flex_int *dec2);
 bool check_alloc(uint8_t *data_size_bit, int *norm_bits);
+bool cycle_normal(uint8_t *big_exp, uint8_t *small_exp, flex_int *small_dec);
 bool mul_ten(flex_int *decimal);
 
 #endif  // SRC_INCLUDE_FLEXIBLE_COMMON_H_
