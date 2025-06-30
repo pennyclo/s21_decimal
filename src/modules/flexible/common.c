@@ -269,9 +269,9 @@ void normalization(flex_int *dec1, flex_int *dec2) {
     bool big_exp = dec_exp_1 > dec_exp_2 ? true : false;
 
     if (big_exp) {
-      crt = cycle_normal(&dec_exp_1, &dec_exp_2, dec2);
-    } else {
       crt = cycle_normal(&dec_exp_2, &dec_exp_1, dec1);
+    } else {
+      crt = cycle_normal(&dec_exp_1, &dec_exp_2, dec2);
     }
   }
 
@@ -281,13 +281,13 @@ void normalization(flex_int *dec1, flex_int *dec2) {
 }
 
 bool cycle_normal(uint8_t *big_exp, uint8_t *small_exp, flex_int *small_dec) {
-  int sub_exp = *big_exp - *small_exp;
+  int sub_exp = *small_exp - *big_exp;
   bool crt = 1;
   uint8_t sign = GET_SIGN_FLEX(small_dec->service);
-
+  printf("|%d|\n", sub_exp);
   for (int i = 0; i < sub_exp && crt; i++) {
     crt = mul_ten(small_dec);
-    (*small_exp)++;
+    (*small_exp)--;
     small_dec->service = *small_exp << 1 | sign;
   }
 
@@ -322,3 +322,5 @@ bool check_alloc(uint8_t *data_size_bit, int *norm_bits) {
 
   return check_alloc;
 }
+
+void rounded(flex_int *decimal, int *round) {}
