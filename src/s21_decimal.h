@@ -12,6 +12,7 @@
 #ifndef SRC_S21_DECIMAL_H_
 #define SRC_S21_DECIMAL_H_
 
-#include "include/types.h"
+#include "include/comparisons/comparisons.h"
+#include "include/types.h"  //thinks
 
 #endif  // SRC_S21_DECIMAL_H_
