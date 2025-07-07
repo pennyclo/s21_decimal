@@ -231,17 +231,16 @@ START_TEST(bit_sub_4) {
 END_TEST
 
 START_TEST(bit_sub_5) {
-  s21_decimal x = {{0xFFFFFFFFu, 0xFFFFFFFFu, 0xFFFFFFFFu, 0}};
-  s21_decimal y = {{1u, 0u, 0u, 0}};
+  s21_decimal x = {{4294967295u, 4294967295u, 4294967295u, 0}};
+  s21_decimal y = {{1u, 0, 0, 0}};
 
   uint8_t res[] = {254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255};
 
   flex_int x1 = decimal_to_flex(&x);
   flex_int y1 = decimal_to_flex(&y);
-
   flex_int sub = flex_sub(&x1, &y1);
 
-  for (int i = 0; i <= sub.data_size / 8; i++) {
+  for (int i = 0; i < 12; i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
   }
 
@@ -264,4 +263,58 @@ Suite *bits_sub_case_1(void) {
   suite_add_tcase(subtraction, tc_bit_sub);
 
   return subtraction;
+}
+
+START_TEST(bit_sum_1) {
+  s21_decimal x = {{1, 2, 3, 0}};
+  s21_decimal y = {{4, 5, 6, 0}};
+
+  uint8_t res[] = {5, 0, 0, 0, 7, 0, 0, 0, 9};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+
+  flex_int sum = flex_sum(&x1, &y1);
+
+  for (int i = 0; i <= sum.data_size / 8; i++) {
+    ck_assert_int_eq(sum.data[i], res[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(sum.data);
+}
+END_TEST
+
+START_TEST(bit_sum_2) {
+  s21_decimal x = {{4294967295u, 4294967295u, 4294967295u, 0}};
+  s21_decimal y = {{1u, 0, 0, 0}};
+
+  uint8_t res[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+
+  flex_int sum = flex_sum(&x1, &y1);
+
+  for (int i = 0; i <= sum.data_size / 8; i++) {
+    ck_assert_int_eq(sum.data[i], res[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(sum.data);
+}
+END_TEST
+
+Suite *bits_sum_case_1(void) {
+  Suite *sum = suite_create("\nbits_sum (bits_sum case 1)\n");
+
+  TCase *tc_bit_sum = tcase_create("bits sum test");
+  tcase_add_test(tc_bit_sum, bit_sum_1);
+  tcase_add_test(tc_bit_sum, bit_sum_2);
+
+  suite_add_tcase(sum, tc_bit_sum);
+
+  return sum;
 }
