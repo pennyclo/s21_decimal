@@ -307,14 +307,116 @@ START_TEST(bit_sum_2) {
 }
 END_TEST
 
+START_TEST(bit_sum_3) {
+  s21_decimal x = {{0, 0, 0, 0}};
+  s21_decimal y = {{123, 456, 789, 0}};
+
+  uint8_t res[] = {123, 0, 0, 0, 200, 1, 0, 0, 21, 3, 0, 0};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+
+  flex_int sum = flex_sum(&x1, &y1);
+
+  for (int i = 0; i <= sum.data_size / 8; i++) {
+    ck_assert_int_eq(sum.data[i], res[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(sum.data);
+}
+END_TEST
+
+START_TEST(bit_sum_4) {
+  s21_decimal x = {{0, 0, 0, 0}};
+  s21_decimal y = {{0, 0, 0, 0}};
+
+  uint8_t res[] = {0, 0, 0, 0};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+
+  flex_int sum = flex_sum(&x1, &y1);
+
+  for (int i = 0; i <= sum.data_size / 8; i++) {
+    ck_assert_int_eq(sum.data[i], res[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(sum.data);
+}
+END_TEST
+
+START_TEST(bit_sum_5) {
+  s21_decimal x = {{0xFFFFFFFF, 0, 0, 0}};  // Макс. значение uint32_t
+  s21_decimal y = {{1, 0, 0, 0}};
+
+  uint8_t res[] = {0, 0, 0, 0, 1};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+
+  flex_int sum = flex_sum(&x1, &y1);
+
+  for (int i = 0; i <= sum.data_size / 8; i++) {
+    ck_assert_int_eq(sum.data[i], res[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(sum.data);
+}
+END_TEST
+
 Suite *bits_sum_case_1(void) {
   Suite *sum = suite_create("\nbits_sum (bits_sum case 1)\n");
 
   TCase *tc_bit_sum = tcase_create("bits sum test");
   tcase_add_test(tc_bit_sum, bit_sum_1);
   tcase_add_test(tc_bit_sum, bit_sum_2);
+  tcase_add_test(tc_bit_sum, bit_sum_3);
+  tcase_add_test(tc_bit_sum, bit_sum_4);
+  tcase_add_test(tc_bit_sum, bit_sum_5);
 
   suite_add_tcase(sum, tc_bit_sum);
 
   return sum;
 }
+
+// START_TEST(bit_div_1) {
+//   s21_decimal x = {{0xFFFFFFFF, 0, 0, 0}};  // Макс. значение uint32_t
+//   s21_decimal y = {{1, 0, 0, 0}};
+
+//   uint8_t res[] = {0, 0, 0, 0, 1};
+
+//   flex_int x1 = decimal_to_flex(&x);
+//   flex_int y1 = decimal_to_flex(&y);
+
+//   flex_int div = flex_div(&x1, &y1);
+
+//   for (int i = 0; i <= div.data_size / 8; i++) {
+//     ck_assert_int_eq(div.data[i], res[i]);
+//   }
+
+//   free(x1.data);
+//   free(y1.data);
+//   free(div.data);
+// }
+// END_TEST
+
+// Suite *bits_div_case_1(void) {
+//   Suite *div = suite_create("\nbits_div (bits_div case 1)\n");
+
+//   TCase *tc_bit_div = tcase_create("bits div test");
+//   tcase_add_test(tc_bit_div, bit_div_1);
+//   // tcase_add_test(tc_bit_div, bit_div_2);
+//   // tcase_add_test(tc_bit_div, bit_div_3);
+//   // tcase_add_test(tc_bit_div, bit_div_4);
+//   // tcase_add_test(tc_bit_div, bit_div_5);
+
+//   suite_add_tcase(div, tc_bit_div);
+
+//   return div;
+// }

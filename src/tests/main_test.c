@@ -9,6 +9,7 @@ int main(void) {
   srunner_add_suite(sr, bits_mul_case_1());
   srunner_add_suite(sr, bits_sub_case_1());
   srunner_add_suite(sr, bits_sum_case_1());
+  // srunner_add_suite(sr, bits_div_case_1());
 
   srunner_run_all(sr, CK_NORMAL);
   number_failed = srunner_ntests_failed(sr);
