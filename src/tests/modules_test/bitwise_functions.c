@@ -13,7 +13,7 @@ START_TEST(bit_mul_1) {
 
   uint8_t res[] = {25, 0, 0};
 
-  for (int i = 0; i < mul.data_size / 8 + 1; i++) {
+  for (int i = 0; i < ((mul.data_size + 7) / 8); i++) {
     ck_assert_int_eq(mul.data[i], res[i]);
   }
 
@@ -33,7 +33,7 @@ START_TEST(bit_mul_2) {
   flex_int mul = flex_mul(&x1, &y1);
   uint8_t res[] = {121, 0, 0};
 
-  for (int i = 0; i < mul.data_size / 8 + 1; i++) {
+  for (int i = 0; i < ((mul.data_size + 7) / 8); i++) {
     ck_assert_int_eq(mul.data[i], res[i]);
   }
 
@@ -53,7 +53,7 @@ START_TEST(bit_mul_3) {
 
   flex_int mul = flex_mul(&x1, &y1);
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < ((mul.data_size + 7) / 8); i++) {
     ck_assert_int_eq(mul.data[i], z.bits[i]);
   }
 
@@ -75,7 +75,7 @@ START_TEST(bit_mul_4) {
 
   flex_int mul = flex_mul(&x1, &y1);
 
-  for (int i = 0; i < mul.data_size / 8 + 1; i++) {
+  for (int i = 0; i < ((mul.data_size + 7) / 8); i++) {
     ck_assert_int_eq(mul.data[i], res[i]);
   }
 
@@ -98,7 +98,7 @@ START_TEST(bit_mul_5) {
 
   flex_int mul = flex_mul(&x1, &y1);
 
-  for (int i = 0; i < mul.data_size / 8 + 1; i++) {
+  for (int i = 0; i < ((mul.data_size + 7) / 8); i++) {
     ck_assert_int_eq(mul.data[i], res[i]);
   }
 
@@ -120,7 +120,7 @@ START_TEST(bit_mul_6) {
 
   flex_int mul = flex_mul(&x1, &y1);
 
-  for (int i = 0; i < mul.data_size / 8 + 2; i++) {
+  for (int i = 0; i < ((mul.data_size + 7) / 8); i++) {
     ck_assert_int_eq(mul.data[i], res[i]);
   }
 
@@ -157,7 +157,7 @@ START_TEST(bit_sub_1) {
 
   flex_int sub = flex_sub(&x1, &y1);
 
-  for (int i = 0; i <= sub.data_size / 8; i++) {
+  for (int i = 0; i < ((sub.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
   }
 
@@ -178,7 +178,7 @@ START_TEST(bit_sub_2) {
 
   flex_int sub = flex_sub(&x1, &y1);
 
-  for (int i = 0; i <= sub.data_size / 8; i++) {
+  for (int i = 0; i < ((sub.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
   }
 
@@ -199,7 +199,7 @@ START_TEST(bit_sub_3) {
 
   flex_int sub = flex_sub(&x1, &y1);
 
-  for (int i = 0; i <= sub.data_size / 8; i++) {
+  for (int i = 0; i < ((sub.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
   }
 
@@ -220,7 +220,7 @@ START_TEST(bit_sub_4) {
 
   flex_int sub = flex_sub(&x1, &y1);
 
-  for (int i = 0; i <= sub.data_size / 8; i++) {
+  for (int i = 0; i < ((sub.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
   }
 
@@ -240,7 +240,7 @@ START_TEST(bit_sub_5) {
   flex_int y1 = decimal_to_flex(&y);
   flex_int sub = flex_sub(&x1, &y1);
 
-  for (int i = 0; i < 12; i++) {
+  for (int i = 0; i < ((sub.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sub.data[i], res[i]);
   }
 
@@ -276,7 +276,7 @@ START_TEST(bit_sum_1) {
 
   flex_int sum = flex_sum(&x1, &y1);
 
-  for (int i = 0; i <= sum.data_size / 8; i++) {
+  for (int i = 0; i < ((sum.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sum.data[i], res[i]);
   }
 
@@ -297,7 +297,7 @@ START_TEST(bit_sum_2) {
 
   flex_int sum = flex_sum(&x1, &y1);
 
-  for (int i = 0; i <= sum.data_size / 8; i++) {
+  for (int i = 0; i < ((sum.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sum.data[i], res[i]);
   }
 
@@ -318,7 +318,7 @@ START_TEST(bit_sum_3) {
 
   flex_int sum = flex_sum(&x1, &y1);
 
-  for (int i = 0; i <= sum.data_size / 8; i++) {
+  for (int i = 0; i < ((sum.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sum.data[i], res[i]);
   }
 
@@ -339,7 +339,7 @@ START_TEST(bit_sum_4) {
 
   flex_int sum = flex_sum(&x1, &y1);
 
-  for (int i = 0; i <= sum.data_size / 8; i++) {
+  for (int i = 0; i < ((sum.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sum.data[i], res[i]);
   }
 
@@ -350,7 +350,7 @@ START_TEST(bit_sum_4) {
 END_TEST
 
 START_TEST(bit_sum_5) {
-  s21_decimal x = {{0xFFFFFFFF, 0, 0, 0}};  // Макс. значение uint32_t
+  s21_decimal x = {{0xFFFFFFFF, 0, 0, 0}};
   s21_decimal y = {{1, 0, 0, 0}};
 
   uint8_t res[] = {0, 0, 0, 0, 1};
@@ -360,7 +360,7 @@ START_TEST(bit_sum_5) {
 
   flex_int sum = flex_sum(&x1, &y1);
 
-  for (int i = 0; i <= sum.data_size / 8; i++) {
+  for (int i = 0; i < ((sum.data_size + 7) / 8); i++) {
     ck_assert_int_eq(sum.data[i], res[i]);
   }
 
@@ -385,38 +385,148 @@ Suite *bits_sum_case_1(void) {
   return sum;
 }
 
-// START_TEST(bit_div_1) {
-//   s21_decimal x = {{0xFFFFFFFF, 0, 0, 0}};  // Макс. значение uint32_t
-//   s21_decimal y = {{1, 0, 0, 0}};
+START_TEST(bit_div_1) {
+  s21_decimal x = {{10, 10, 10, 0}};
+  s21_decimal y = {{5, 10, 10, 0}};
 
-//   uint8_t res[] = {0, 0, 0, 0, 1};
+  uint8_t res[] = {1};
+  uint8_t remaind[] = {5};
 
-//   flex_int x1 = decimal_to_flex(&x);
-//   flex_int y1 = decimal_to_flex(&y);
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
 
-//   flex_int div = flex_div(&x1, &y1);
+  flex_int div = flex_div(&x1, &y1);
 
-//   for (int i = 0; i <= div.data_size / 8; i++) {
-//     ck_assert_int_eq(div.data[i], res[i]);
-//   }
+  for (int i = 0; i < ((div.data_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.data[i], res[i]);
+  }
 
-//   free(x1.data);
-//   free(y1.data);
-//   free(div.data);
-// }
-// END_TEST
+  for (int i = 0; i < ((div.remainder_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.remainder[i], remaind[i]);
+  }
 
-// Suite *bits_div_case_1(void) {
-//   Suite *div = suite_create("\nbits_div (bits_div case 1)\n");
+  free(x1.data);
+  free(y1.data);
+  free(div.data);
+  free(div.remainder);
+}
+END_TEST
 
-//   TCase *tc_bit_div = tcase_create("bits div test");
-//   tcase_add_test(tc_bit_div, bit_div_1);
-//   // tcase_add_test(tc_bit_div, bit_div_2);
-//   // tcase_add_test(tc_bit_div, bit_div_3);
-//   // tcase_add_test(tc_bit_div, bit_div_4);
-//   // tcase_add_test(tc_bit_div, bit_div_5);
+START_TEST(bit_div_2) {
+  s21_decimal x = {{123456, 0, 0, 0}};
+  s21_decimal y = {{1, 0, 0, 0}};
 
-//   suite_add_tcase(div, tc_bit_div);
+  uint8_t res[] = {0x40, 0xe2, 0x01};
+  uint8_t remaind[] = {0};
 
-//   return div;
-// }
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+  flex_int div = flex_div(&x1, &y1);
+
+  for (int i = 0; i < ((div.data_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.data[i], res[i]);
+  }
+
+  for (int i = 0; i < ((div.remainder_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.remainder[i], remaind[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(div.data);
+  free(div.remainder);
+}
+END_TEST
+
+START_TEST(bit_div_3) {
+  s21_decimal x = {{999, 0, 0, 0}};
+  s21_decimal y = {{999, 0, 0, 0}};
+
+  uint8_t res[] = {1};
+  uint8_t remaind[] = {0};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+  flex_int div = flex_div(&x1, &y1);
+
+  for (int i = 0; i < ((div.data_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.data[i], res[i]);
+  }
+
+  for (int i = 0; i < ((div.remainder_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.remainder[i], remaind[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(div.data);
+  free(div.remainder);
+}
+END_TEST
+
+START_TEST(bit_div_4) {
+  s21_decimal x = {{5, 0, 0, 0}};
+  s21_decimal y = {{10, 0, 0, 0}};
+
+  uint8_t res[] = {0};
+  uint8_t remaind[] = {5};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+  flex_int div = flex_div(&x1, &y1);
+
+  for (int i = 0; i < ((div.data_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.data[i], res[i]);
+  }
+
+  for (int i = 0; i < ((div.remainder_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.remainder[i], remaind[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(div.data);
+  free(div.remainder);
+}
+END_TEST
+
+START_TEST(bit_div_5) {
+  s21_decimal x = {{1234567890, 0, 0, 0}};
+  s21_decimal y = {{1000000000, 0, 0, 0}};
+
+  uint8_t res[] = {1};
+  uint8_t remaind[] = {210, 56, 251, 13};
+
+  flex_int x1 = decimal_to_flex(&x);
+  flex_int y1 = decimal_to_flex(&y);
+  flex_int div = flex_div(&x1, &y1);
+
+  for (int i = 0; i < ((div.data_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.data[i], res[i]);
+  }
+
+  for (int i = 0; i < ((div.remainder_size + 7) / 8); i++) {
+    ck_assert_int_eq(div.remainder[i], remaind[i]);
+  }
+
+  free(x1.data);
+  free(y1.data);
+  free(div.data);
+  free(div.remainder);
+}
+END_TEST
+
+Suite *bits_div_case_1(void) {
+  Suite *div = suite_create("\nbits_div (bits_div case 1)\n");
+
+  TCase *tc_bit_div = tcase_create("bits div test");
+  tcase_add_test(tc_bit_div, bit_div_1);
+  tcase_add_test(tc_bit_div, bit_div_2);
+  tcase_add_test(tc_bit_div, bit_div_3);
+  tcase_add_test(tc_bit_div, bit_div_4);
+  tcase_add_test(tc_bit_div, bit_div_5);
+
+  suite_add_tcase(div, tc_bit_div);
+
+  return div;
+}
