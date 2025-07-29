@@ -17,5 +17,7 @@
 
 int s21_is_less(s21_decimal *dec1, s21_decimal *dec2);
 int s21_is_less_or_equal(s21_decimal *dec1, s21_decimal *dec2);
+int s21_is_greater(s21_decimal *dec1, s21_decimal *dec2);
+int s21_is_greater_or_equal(s21_decimal *dec1, s21_decimal *dec2);
 
 #endif  // SRC_INCLUDE_COMPARISONS_COMPARISONS_H_
