@@ -12,9 +12,8 @@
 #ifndef SRC_INCLUDE_UTILS_DEBUG_H_
 #define SRC_INCLUDE_UTILS_DEBUG_H_
 
+#include "../../s21_decimal.h"
 #include "../flexible/common.h"
-#include "../macros.h"
-#include "../types.h"
 
 void print_int_bits(int decimal);
 

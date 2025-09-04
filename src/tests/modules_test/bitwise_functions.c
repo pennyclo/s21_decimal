@@ -538,6 +538,7 @@ Suite *bits_div_case_1(void) {
  * number are filled).
  */
 START_TEST(bit_normal_1) {
+  int error = 0;
   s21_decimal x = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 1376256u}};
   s21_decimal y = {{543, 342, 364, 4456448u}};
 
@@ -547,13 +548,14 @@ START_TEST(bit_normal_1) {
 
   flex_int x1 = decimal_to_flex(&x);
   flex_int y1 = decimal_to_flex(&y);
-  normalization(&x1, &y1);
+  error = normalization(&x1, &y1);
+
+  ck_assert_int_eq(error, OK);
+  ck_assert_int_eq(GET_SCALE_FLEX(y1.service), GET_SCALE_FLEX(x1.service));
 
   for (int i = 0; i < ((x1.data_size + 7) / 8); i++) {
     ck_assert_int_eq(x1.data[i], normal_x[i]);
   }
-
-  ck_assert_int_eq(GET_SCALE_FLEX(y1.service), GET_SCALE_FLEX(x1.service));
 
   free(x1.data);
   free(y1.data);
@@ -561,6 +563,7 @@ START_TEST(bit_normal_1) {
 END_TEST
 
 START_TEST(bit_normal_2) {
+  int error = 0;
   s21_decimal x = {{100, 0, 0, 65536u}};
   s21_decimal y = {{200, 0, 0, 65536u}};
 
@@ -569,8 +572,9 @@ START_TEST(bit_normal_2) {
 
   flex_int x1 = decimal_to_flex(&x);
   flex_int y1 = decimal_to_flex(&y);
-  normalization(&x1, &y1);
+  error = normalization(&x1, &y1);
 
+  ck_assert_int_eq(error, OK);
   ck_assert_int_eq(GET_SCALE_FLEX(y1.service), GET_SCALE_FLEX(x1.service));
 
   ck_assert_int_eq(x1.data[0], normal_x[0]);
@@ -582,6 +586,7 @@ START_TEST(bit_normal_2) {
 END_TEST
 
 START_TEST(bit_normal_3) {
+  int error = 0;
   s21_decimal x = {{10, 0, 0, 0}};
   s21_decimal y = {{1, 0, 0, 65536u}};
 
@@ -589,8 +594,9 @@ START_TEST(bit_normal_3) {
 
   flex_int x1 = decimal_to_flex(&x);
   flex_int y1 = decimal_to_flex(&y);
-  normalization(&x1, &y1);
+  error = normalization(&x1, &y1);
 
+  ck_assert_int_eq(error, OK);
   ck_assert_int_eq(GET_SCALE_FLEX(y1.service), GET_SCALE_FLEX(x1.service));
 
   ck_assert_int_eq(x1.data[0], normal_x[0]);
@@ -601,6 +607,7 @@ START_TEST(bit_normal_3) {
 END_TEST
 
 START_TEST(bit_normal_4) {
+  int error = 0;
   s21_decimal x = {{1, 0, 0, 65536u}};
   s21_decimal y = {{100, 0, 0, 0}};
 
@@ -608,8 +615,9 @@ START_TEST(bit_normal_4) {
 
   flex_int x1 = decimal_to_flex(&x);
   flex_int y1 = decimal_to_flex(&y);
-  normalization(&x1, &y1);
+  error = normalization(&x1, &y1);
 
+  ck_assert_int_eq(error, OK);
   ck_assert_int_eq(GET_SCALE_FLEX(y1.service), GET_SCALE_FLEX(x1.service));
 
   for (int i = 0; i < (y1.data_size + 7) / 8; i++) {
@@ -622,6 +630,7 @@ START_TEST(bit_normal_4) {
 END_TEST
 
 START_TEST(bit_normal_5) {
+  int error = 0;
   s21_decimal x = {{100000, 0, 0, 0}};
   s21_decimal y = {{1, 0, 0, 131072u}};
 
@@ -629,8 +638,9 @@ START_TEST(bit_normal_5) {
 
   flex_int x1 = decimal_to_flex(&x);
   flex_int y1 = decimal_to_flex(&y);
-  normalization(&x1, &y1);
+  error = normalization(&x1, &y1);
 
+  ck_assert_int_eq(error, OK);
   ck_assert_int_eq(GET_SCALE_FLEX(y1.service), GET_SCALE_FLEX(x1.service));
 
   for (int i = 0; i < x1.data_size / 8; i++) {

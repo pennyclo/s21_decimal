@@ -16,6 +16,7 @@
 
 #define DEC_SIZE 4
 #define MAX_DEC_BIT (DEC_SIZE - 1) * sizeof(unsigned int)
+#define DEC_SIZE_BITS 96
 
 typedef struct {
   unsigned int bits[DEC_SIZE];

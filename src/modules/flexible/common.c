@@ -44,23 +44,20 @@ flex_int decimal_to_flex(s21_decimal *decimal) {
   return data;
 }
 
-flex_int realloc_to_flex(flex_int decimal, int rllc_size) {  // delete
-  flex_int data = {0};
+int realloc_to_flex(uint8_t **decimal, int *rllc_size) {
+  int valid = OK;
+  uint8_t *rllc_decimal =
+      (uint8_t *)realloc(*decimal, (*rllc_size + 1) * sizeof(uint8_t));
 
-  data.data_size = rllc_size;
-  data.service = decimal.service;
-  data.data = (uint8_t *)calloc((size_t)ceil((double)data.data_size / 8),
-                                sizeof(uint8_t));
-  if (!data.data) {
-    return data;
+  if (!rllc_decimal) {
+    valid = ERROR_MEMORY;
+  } else {
+    *decimal = rllc_decimal;
+    (*decimal)[*rllc_size] = 0;
+    *rllc_size += 1;
   }
 
-  for (int i = data.data_size - 1; i >= 0; i--) {
-    SET_DEC_BIT(data.data, i,
-                CHECK_DEC_BIT(decimal.data, i, decimal.data_size - 1));
-  }
-
-  return data;
+  return valid;
 }
 
 flex_int flex_sum(flex_int *dec1, flex_int *dec2) {
@@ -137,18 +134,18 @@ void cycle_sub(uint8_t *differ, uint8_t *min, uint8_t *subtrh, int min_size,
   }
 }
 
-int normal_bit_sub(flex_int *decimal, int normal_size_bit) {  // delete
-  int valid = 1;
-  flex_int tmp = realloc_to_flex(*decimal, normal_size_bit);
-  if (tmp.data) {
-    free(decimal->data);
-    *decimal = tmp;
-  } else {
-    valid = 0;
-  }
+// int normal_bit_sub(flex_int *decimal, int normal_size_bit) {  // delete
+//   int valid = 1;
+//   flex_int tmp = realloc_to_flex(*decimal, normal_size_bit);
+//   if (tmp.data) {
+//     free(decimal->data);
+//     *decimal = tmp;
+//   } else {
+//     valid = 0;
+//   }
 
-  return valid;
-}
+//   return valid;
+// }
 
 int significants_count_flex(uint8_t *decimal, int size) {
   int i = size * SIZE(uint8_t) - 1;
@@ -220,10 +217,85 @@ flex_int flex_div(flex_int *dividend, flex_int *divisor) {
     }
   }
 
-  quotient.data_size = significants_count_flex(quotient.data, size_quotient);
   quotient.remainder_size = significants_count_flex(quotient.remainder, size);
 
+  if (quotient.remainder) {
+    binary_remainder(quotient.remainder, quotient.remainder_size, *divisor);
+  }
+
+  quotient.data_size = significants_count_flex(quotient.data, size_quotient);
+
   return quotient;
+}
+
+void bin_copy(
+    uint8_t *copy_value, int copy_size_bin, uint8_t *res_value,
+    int res_size_bin) {  //  before delete & change bin_rem_tmp to remainder
+  for (int i = 0; i < res_size_bin; i++) {
+    SET_DEC_BIT(res_value, i, CHECK_DEC_BIT(copy_value, i, copy_size_bin));
+  }
+}
+
+int binary_remainder(uint8_t *remainder, int rem_size_bin, flex_int divisor) {
+  int valid = OK;
+  int size = ((divisor.data_size + 7) / 8) + 1;
+  int size_res = size;
+  int count_cycle = 0;
+  uint8_t *bin_rem_tmp = (uint8_t *)calloc(size, sizeof(uint8_t));
+  uint8_t *res_rem = (uint8_t *)calloc(size_res, sizeof(uint8_t));
+
+  bin_copy(remainder, rem_size_bin, bin_rem_tmp, size * 8);
+  int size_bit = significants_count_flex(bin_rem_tmp, size);
+
+  while (count_cycle < 97 && size_bit && !valid) {
+    if (count_cycle == size_res * 8) {
+      valid = realloc_to_flex(&res_rem, &size_res);
+    }
+
+    int big_value =
+        check_big_dec(divisor.data, divisor.data_size, bin_rem_tmp, size_bit);
+    if (big_value == 1) {
+      shift_left(bin_rem_tmp, size);
+      count_cycle++;
+    } else if (big_value != 1) {
+      if (big_value) {
+        SET_DEC_BIT(res_rem, count_cycle, 1);
+      }
+
+      cycle_sub(bin_rem_tmp, bin_rem_tmp, divisor.data, size, size - 1);
+      count_cycle++;
+    }
+
+    size_bit = significants_count_flex(bin_rem_tmp, size);
+  }
+  print_flex(res_rem, size_res * 8);  // for debag
+
+  free(bin_rem_tmp);  // for debag
+  free(res_rem);      // for debag
+  return valid;
+}
+
+int check_big_dec(uint8_t *decimal_1, int size_dec_1, uint8_t *decimal_2,
+                  int size_dec_2) {
+  int big_val = 0;
+
+  if (size_dec_1 > size_dec_2) {
+    big_val = 1;
+  } else if (size_dec_2 > size_dec_1) {
+    big_val = 2;
+  } else if (size_dec_1 == size_dec_2) {
+    for (int i = size_dec_1 - 1; i >= 0 && !big_val; i--) {
+      uint8_t check1 = CHECK_DEC_BIT(decimal_1, i, size_dec_1);
+      uint8_t check2 = CHECK_DEC_BIT(decimal_2, i, size_dec_2);
+
+      big_val = (check1 > check2) ? 1 : 0;
+      if (!big_val) {
+        big_val = (check2 > check1) ? 2 : 0;
+      }
+    }
+  }
+
+  return big_val;
 }
 
 void shift_left(uint8_t *decimal, int size) {
@@ -259,11 +331,11 @@ int compare_decimal(uint8_t *dec1, uint8_t *dec2, int size) {
   return valid;
 }
 
-/* */
-void normalization(flex_int *dec1, flex_int *dec2) {
+int normalization(flex_int *dec1, flex_int *dec2) {
+  int err_num = OK;
+  bool crt = true;
   uint8_t dec_exp_1 = GET_SCALE_FLEX(dec1->service);
   uint8_t dec_exp_2 = GET_SCALE_FLEX(dec2->service);
-  bool crt = true;
 
   if (dec_exp_1 != dec_exp_2) {
     bool big_exp = dec_exp_1 > dec_exp_2 ? true : false;
@@ -276,8 +348,10 @@ void normalization(flex_int *dec1, flex_int *dec2) {
   }
 
   if (!crt) {
-    printf("Error in normalization\n");  // before add errors
+    err_num = ERROR_MEMORY;
   }
+
+  return err_num;
 }
 
 bool cycle_normal(uint8_t *big_exp, uint8_t *small_exp, flex_int *small_dec) {
@@ -338,4 +412,33 @@ int eq_sign(uint8_t *ser_dec1, uint8_t *ser_dec2) {
   return equal_sign;
 }
 
-void rounded(flex_int *decimal, int *round) {}
+int flex_to_decimal(flex_int value, s21_decimal *result) {
+  int crt = 0;
+
+  if (value.data_size > DEC_SIZE_BITS) {
+    rounded(&value, DEC_SIZE_BITS);
+  }
+
+  return crt;
+}
+
+void rounded(flex_int *decimal, int round) {
+  // for (int i = 0; i < decimal->data_size - round; i++) {
+  //   CHECK_DEC_BIT(decimal->data, i, decimal->data_size);
+  // }
+}
+
+void print_flex(uint8_t *x, int bit_size) {
+  if (x == NULL || bit_size < 0) {
+    printf("Empty flex_int\n");
+    return;
+  }
+
+  for (int i = bit_size - 1; i >= 0; i--) {
+    // for (int i = 95; i >= 0; i--) {
+    printf("%d", CHECK_DEC_BIT(x, i, bit_size - 1));
+    if (i % 8 == 0) {
+      printf(" ");
+    }
+  }
+}
