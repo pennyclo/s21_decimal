@@ -42,7 +42,7 @@ bool check_alloc(uint8_t *data_size_bit, int *norm_bits);
 bool cycle_normal(uint8_t *big_exp, uint8_t *small_exp, flex_int *small_dec);
 bool mul_ten(flex_int *decimal);
 int eq_sign(uint8_t *ser_dec1, uint8_t *ser_dec2);
-int binary_remainder(uint8_t *remainder, int rem_size_bin, flex_int divisor);
+int binary_remainder(uint8_t *remainder, flex_int divisor);
 int check_big_dec(uint8_t *decimal_1, int size_dec_1, uint8_t *decimal_2,
                   int size_dec_2);
 void rounded(flex_int *decimal, int round);

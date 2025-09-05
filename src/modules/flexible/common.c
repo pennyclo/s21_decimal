@@ -220,7 +220,7 @@ flex_int flex_div(flex_int *dividend, flex_int *divisor) {
   quotient.remainder_size = significants_count_flex(quotient.remainder, size);
 
   if (quotient.remainder) {
-    binary_remainder(quotient.remainder, quotient.remainder_size, *divisor);
+    binary_remainder(quotient.remainder, *divisor);
   }
 
   quotient.data_size = significants_count_flex(quotient.data, size_quotient);
@@ -228,24 +228,21 @@ flex_int flex_div(flex_int *dividend, flex_int *divisor) {
   return quotient;
 }
 
-void bin_copy(
-    uint8_t *copy_value, int copy_size_bin, uint8_t *res_value,
-    int res_size_bin) {  //  before delete & change bin_rem_tmp to remainder
+void bin_copy(uint8_t *copy_value, int copy_size_bin, uint8_t *res_value,
+              int res_size_bin) {  //  before delete
   for (int i = 0; i < res_size_bin; i++) {
     SET_DEC_BIT(res_value, i, CHECK_DEC_BIT(copy_value, i, copy_size_bin));
   }
 }
 
-int binary_remainder(uint8_t *remainder, int rem_size_bin, flex_int divisor) {
+int binary_remainder(uint8_t *remainder, flex_int divisor) {
   int valid = OK;
   int size = ((divisor.data_size + 7) / 8) + 1;
   int size_res = size;
   int count_cycle = 0;
-  uint8_t *bin_rem_tmp = (uint8_t *)calloc(size, sizeof(uint8_t));
   uint8_t *res_rem = (uint8_t *)calloc(size_res, sizeof(uint8_t));
 
-  bin_copy(remainder, rem_size_bin, bin_rem_tmp, size * 8);
-  int size_bit = significants_count_flex(bin_rem_tmp, size);
+  int size_bit = significants_count_flex(remainder, size);
 
   while (count_cycle < 97 && size_bit && !valid) {
     if (count_cycle == size_res * 8) {
@@ -253,25 +250,22 @@ int binary_remainder(uint8_t *remainder, int rem_size_bin, flex_int divisor) {
     }
 
     int big_value =
-        check_big_dec(divisor.data, divisor.data_size, bin_rem_tmp, size_bit);
+        check_big_dec(divisor.data, divisor.data_size, remainder, size_bit);
     if (big_value == 1) {
-      shift_left(bin_rem_tmp, size);
+      shift_left(remainder, size);
       count_cycle++;
     } else if (big_value != 1) {
       if (big_value) {
         SET_DEC_BIT(res_rem, count_cycle, 1);
       }
 
-      cycle_sub(bin_rem_tmp, bin_rem_tmp, divisor.data, size, size - 1);
+      cycle_sub(remainder, remainder, divisor.data, size, size - 1);
       count_cycle++;
     }
 
-    size_bit = significants_count_flex(bin_rem_tmp, size);
+    size_bit = significants_count_flex(remainder, size);
   }
-  print_flex(res_rem, size_res * 8);  // for debag
 
-  free(bin_rem_tmp);  // for debag
-  free(res_rem);      // for debag
   return valid;
 }
 
